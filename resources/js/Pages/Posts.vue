@@ -12,7 +12,7 @@
           <tr>
             <th class="px-4 py-2 w-20">Titulo</th>
             <th class="px-4 py-2">autor</th>
-            <th class="px-4 py-2">corpo</th>
+            <th class="px-2 py-2">corpo</th>
             <th class="px-4 py-2">Action</th>
           </tr>
         </thead>
@@ -20,12 +20,15 @@
           <td class="border px-4 py-2">{{ post.titulo }}</td>
           <td class="border px-4 py-2">{{ post.autor }}</td>
           <td class="border px-4 py-2">{{ truncateText(post.corpo) }}</td>
-          <td class="border px-4 py-2">
+          <td class="border px-1 py-2">
             <button @click="edit(post)" class="btn btn-sm btn-primary">
               Editar
             </button>
             <button @click="deleteRow(post)" class="btn btn-sm btn-danger">
               Del
+            </button>
+            <button @click="view(post)" class="btn btn-sm btn-success">
+              ver
             </button>
           </td>
         </tr>
@@ -40,7 +43,6 @@
           <div class="fixed inset-0 transition-opacity">
             <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
           </div>
-          <!-- This element is to trick the browser into centering the modal contents. -->
           <span
             class="hidden sm:inline-block sm:align-middle sm:h-screen"
           ></span
@@ -104,19 +106,7 @@
               <div
                 class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
               >
-                <span
-                  class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
-                >
-                  <button
-                    wire:click.prevent="store()"
-                    type="button"
-                    class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-                    v-show="!editMode"
-                    @click="save(form)"
-                  >
-                    Salvar
-                  </button>
-                </span>
+              
                 <span
                   class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto"
                 >
@@ -141,28 +131,31 @@
                     Cancelar
                   </button>
                 </span>
+                
               </div>
+               
             </form>
         
 
       
           </div>
-          <!-- /.modal-content -->
+
         </div>
-        <!-- /.modal-dialog -->
+    
       </div>
-      <!-- /.modal -->
+  
     </div>
   </div>
 </template>
 
 <script>
 export default {
-   props : [ 'data' , 'erros' ],  
+   props : [ 'data'],  
   data() {
     return {
       editMode: false,
       isOpen: false,
+      isOpenview:false,
       form: {
         titulo:'',
         corpo:'',
@@ -179,6 +172,9 @@ export default {
     },
     openModal: function () {
       this.isOpen = true;
+    },
+    openView: function () {
+      this.isOpenView = true;
     },
     closeModal: function () {
       this.isOpen = false;
@@ -210,11 +206,16 @@ export default {
       this.closeModal();
     },
     deleteRow: function (data) {
-      if (!confirm("Are you sure want to remove?")) return;
+      if (!confirm("Tem certeza qedeseja excluir a informação?")) return;
       data._method = "DELETE";
       this.$inertia.post("/posts/" + data.id, data);
       this.reset();
       this.closeModal();
+    },
+    view: function(data){
+        this.form =Object.assign({},data);
+        this.openModal();
+        this.isOpenview=true;
     },
   },
 };
